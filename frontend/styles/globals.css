@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Midnight Theme */
+    --color-primary: 99 102 241;
+    /* #6366f1 - Indigo 500 */
+    --color-primary-hover: 79 70 229;
+    /* #4f46e5 - Indigo 600 */
+
+    --color-secondary: 139 92 246;
+    /* #8b5cf6 - Violet 500 */
+
+    --color-background: 2 6 23;
+    /* #020617 - Slate 950 (Deep Midnight) */
+    --color-surface: 15 23 42;
+    /* #0f172a - Slate 900 */
+
+    --color-text: 248 250 252;
+    /* #f8fafc - Slate 50 */
+    --color-text-secondary: 148 163 184;
+    /* #94a3b8 - Slate 400 */
+
+    --color-border: 30 41 59;
+    /* #1e293b - Slate 800 */
+
+    --color-success: 16 185 129;
+    /* #10b981 */
+    --color-warning: 245 158 11;
+    /* #f59e0b */
+    --color-error: 239 68 68;
+    /* #ef4444 */
+
+    /* Ag Grid Dark defaults */
+  }
+
+  .light-mode {
+    --color-background: 248 250 252;
+    /* #f8fafc - Slate 50 */
+    --color-surface: 255 255 255;
+    /* #ffffff - White */
+    --color-text: 2 6 23;
+    /* #020617 - Slate 950 (Darker Text) */
+    --color-text-secondary: 71 85 105;
+    /* #475569 - Slate 600 (Darker for readability) */
+    --color-border: 203 213 225;
+    /* #cbd5e1 - Slate 300 (Darker for visibility) */
+  }
+
+  body {
+    @apply bg-background text-text antialiased transition-colors duration-300 ease-in-out font-sans;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+}
+
+/* AG Grid Overrides */
+.ag-theme-quartz {
+  --ag-background-color: #1e293b;
+  /* surface */
+  --ag-foreground-color: #f8fafc;
+  /* text */
+  --ag-border-color: #334155;
+  /* border */
+  --ag-header-background-color: rgba(0, 0, 0, 0.2);
+  --ag-row-hover-color: rgba(255, 255, 255, 0.05);
+  --ag-font-family: inherit;
+  --ag-header-foreground-color: #94a3b8;
+  /* text-secondary */
+}

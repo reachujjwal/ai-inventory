@@ -1,0 +1,103 @@
+nohup: ignoring input
+Server is running on port 5000
+GET /api/wishlist 304 59ms
+Fetching products for user: 11, role: user
+GET /api/products 304 30ms
+Fetching products for user: 11, role: user
+GET /api/products 304 20ms
+POST /api/wishlist 200 24ms
+GET /api/wishlist 200 3ms
+Fetching products for user: 11, role: user
+GET /api/products 304 22ms
+GET /api/wishlist 304 26ms
+DELETE /api/wishlist/9 200 12ms
+Checkout failed: Error: Data truncated for column 'status' at row 1
+    at PromisePoolConnection.query (/var/www/html/ai-inventory/backend/node_modules/mysql2/lib/promise/connection.js:29:22)
+    at exports.checkout (/var/www/html/ai-inventory/backend/controllers/orderController.js:61:30)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5) {
+  code: 'WARN_DATA_TRUNCATED',
+  errno: 1265,
+  sql: "INSERT INTO orders (product_id, quantity, total_amount, user_id, status, created_by, order_code, payment_method) VALUES (9, 1, 199, 11, 'confirmed', 11, 'ORD-1767684343781-814', 'cod')",
+  sqlState: '01000',
+  sqlMessage: "Data truncated for column 'status' at row 1"
+}
+POST /api/orders/checkout 400 36ms
+POST /api/payments/create-checkout-session 200 63288ms
+GET /api/wishlist 200 3ms
+POST /api/orders/checkout 201 345ms
+GET /api/orders 200 6ms
+GET /api/orders 304 3ms
+GET /api/wishlist 200 3ms
+GET /api/orders 200 19ms
+Fetching sales for user: 9, role: admin
+GET /api/sales 304 25ms
+Fetching sales for user: 9, role: admin
+GET /api/sales 304 21ms
+GET /api/orders 304 23ms
+GET /api/orders 304 24ms
+GET /api/roles 304 6ms
+GET /api/permissions 304 5ms
+GET /api/roles 304 5ms
+GET /api/permissions 304 3ms
+GET /api/orders 304 16ms
+GET /api/orders 304 16ms
+GET /api/orders 304 3ms
+GET /api/orders 304 4ms
+GET /api/orders 304 24ms
+GET /api/orders 304 26ms
+GET /api/orders 304 19ms
+GET /api/orders 304 4ms
+JWT Verification Error: jwt expired
+GET /api/orders 401 2ms
+JWT Verification Error: jwt expired
+GET /api/wishlist 401 2ms
+POST /api/auth/login 200 164ms
+GET /api/wishlist 304 3ms
+Fetching sales for user: 9, role: admin
+Fetching users for requester: 9, role: admin
+Fetching inventory for user: 9, role: admin
+GET /api/orders 304 36ms
+GET /api/inventory/alerts 200 44ms
+GET /api/users 304 69ms
+GET /api/sales 304 84ms
+GET /api/inventory 200 83ms
+GET /api/orders 304 69ms
+Fetching users for requester: 9, role: admin
+GET /api/users 304 39ms
+GET /api/inventory/alerts 304 45ms
+Fetching sales for user: 9, role: admin
+Fetching inventory for user: 9, role: admin
+GET /api/sales 304 22ms
+GET /api/dashboard/stats?period=all_time 200 190ms
+GET /api/inventory 304 26ms
+GET /api/dashboard/stats?period=all_time 304 16ms
+GET /api/orders 304 16ms
+GET /api/orders 304 14ms
+GET /api/orders 304 4ms
+GET /api/wishlist 304 3ms
+POST /api/auth/login 200 134ms
+GET /api/wishlist 304 2ms
+GET /api/dashboard/stats?period=all_time 200 10ms
+GET /api/dashboard/chart-data?period=all_time 304 5ms
+GET /api/dashboard/stats?period=all_time 304 10ms
+GET /api/dashboard/chart-data?period=all_time 304 3ms
+GET /api/orders 304 3ms
+GET /api/orders 304 6ms
+POST /api/auth/login 400 7ms
+GET /api/orders 304 4ms
+GET /api/wishlist 304 2ms
+GET /api/wishlist 304 2ms
+GET /api/orders 304 16ms
+PUT /api/orders/523/status 200 33ms
+GET /api/orders 200 18ms
+POST /api/auth/login 400 2ms
+POST /api/auth/login 400 1ms
+POST /api/auth/login 400 1ms
+POST /api/auth/login 200 144ms
+GET /api/wishlist 200 3ms
+GET /api/dashboard/chart-data?period=all_time 200 5ms
+GET /api/dashboard/stats?period=all_time 200 14ms
+GET /api/dashboard/chart-data?period=all_time 304 6ms
+GET /api/dashboard/stats?period=all_time 304 14ms
+GET /api/orders 200 3ms
+GET /api/wishlist 304 3ms
