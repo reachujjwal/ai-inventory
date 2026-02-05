@@ -15,6 +15,8 @@ interface RewardLog {
 
 export default function Rewards() {
     const [history, setHistory] = useState<RewardLog[]>([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const { isAuthenticated, loading, user, refreshUser } = useAuth();
     const router = useRouter();
 
@@ -29,12 +31,18 @@ export default function Rewards() {
                 fetchRewardData();
             });
         }
-    }, [isAuthenticated, loading, user?.role]);
+    }, [isAuthenticated, loading, user?.role, page]); // Dependency added: page
 
     const fetchRewardData = async () => {
         try {
-            const historyRes = await api.get('/rewards/history');
-            setHistory(historyRes.data);
+            const historyRes = await api.get(`/rewards/history?page=${page}&limit=10`);
+            // Handle pagination wrapper
+            if (historyRes.data.data) {
+                setHistory(historyRes.data.data);
+                setTotalPages(historyRes.data.pagination.pages);
+            } else {
+                setHistory(historyRes.data); // Fallback
+            }
         } catch (err) {
             console.error(err);
         }
@@ -203,6 +211,31 @@ export default function Rewards() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="px-6 py-4 bg-background/50 border-t border-border flex items-center justify-between">
+                        <div className="text-xs text-text-secondary">
+                            Page <span className="font-bold text-text">{page}</span> of <span className="font-bold text-text">{totalPages}</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setPage(Math.max(1, page - 1))}
+                                disabled={page === 1}
+                                className="px-3 py-1 text-xs font-bold bg-surface border border-border rounded hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() => setPage(Math.min(totalPages, page + 1))}
+                                disabled={page >= totalPages}
+                                className="px-3 py-1 text-xs font-bold bg-surface border border-border rounded hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </Layout>
     );

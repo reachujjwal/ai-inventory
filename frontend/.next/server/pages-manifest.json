@@ -2,14 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
-  "/users": "pages/users.js",
-  "/products": "pages/products.js",
-  "/categories": "pages/categories.js",
-  "/inventory": "pages/inventory.js",
-  "/sales": "pages/sales.js",
   "/orders": "pages/orders.js",
-  "/settings/permissions": "pages/settings/permissions.js",
-  "/coupons": "pages/coupons.js",
-  "/admin/reward-points": "pages/admin/reward-points.js"
+  "/": "pages/index.js"
 }

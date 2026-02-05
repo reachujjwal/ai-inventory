@@ -5,9 +5,12 @@ import Link from 'next/link';
 
 interface RewardWidgetProps {
     className?: string;
+    period?: string;
+    startDate?: string;
+    endDate?: string;
 }
 
-export default function RewardPointsWidget({ className = '' }: RewardWidgetProps) {
+export default function RewardPointsWidget({ className = '', period = 'all_time', startDate = '', endDate = '' }: RewardWidgetProps) {
     const { user } = useAuth();
     const [balance, setBalance] = useState(0);
     const [recentLogs, setRecentLogs] = useState<any[]>([]);
@@ -17,17 +20,25 @@ export default function RewardPointsWidget({ className = '' }: RewardWidgetProps
         if (user?.role === 'user') {
             fetchRewardData();
         }
-    }, [user]);
+    }, [user, period, startDate, endDate]);
 
     const fetchRewardData = async () => {
         try {
+            const params: any = { period };
+            if (period === 'custom' && startDate && endDate) {
+                params.startDate = startDate;
+                params.endDate = endDate;
+            }
+
             const [balanceRes, historyRes] = await Promise.all([
-                api.get('/rewards/balance'),
-                api.get('/rewards/history')
+                api.get('/rewards/balance', { params }),
+                api.get('/rewards/history', { params })
             ]);
             setBalance(balanceRes.data.balance);
             if (Array.isArray(historyRes.data)) {
                 setRecentLogs(historyRes.data.slice(0, 3));
+            } else if (historyRes.data.data && Array.isArray(historyRes.data.data)) {
+                setRecentLogs(historyRes.data.data.slice(0, 3));
             }
         } catch (err) {
             console.error('Failed to fetch reward data:', err);

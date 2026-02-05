@@ -33,22 +33,52 @@ export const exportToPDF = async (data: any[], filename: string, title: string) 
     const { default: jsPDF } = await import('jspdf');
     const { default: autoTable } = await import('jspdf-autotable');
 
-    const doc = new jsPDF();
     const headers = Object.keys(data[0]).map(h => h.toUpperCase().replace(/_/g, ' '));
     const rows = data.map(row => Object.values(row).map(v => v === null ? '' : String(v)));
 
+    // Smart orientation: Use landscape if we have more than 5 columns
+    const orientation = headers.length > 5 ? 'landscape' : 'portrait';
+    const doc = new jsPDF({ orientation });
+
     doc.setFontSize(18);
+    doc.setTextColor(40, 44, 52);
+    doc.setFont('helvetica', 'bold');
     doc.text(title, 14, 22);
-    doc.setFontSize(11);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(100);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
 
     autoTable(doc, {
         head: [headers],
         body: rows,
-        startY: 30,
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [79, 70, 229] }, // Primary color
-        alternateRowStyles: { fillColor: [245, 247, 250] }
+        startY: 35,
+        theme: 'grid',
+        styles: {
+            fontSize: 8, // Slightly smaller font for better fit
+            cellPadding: 4, // Tighter padding
+            lineColor: [200, 200, 200],
+            lineWidth: 0.1,
+            valign: 'middle',
+            textColor: [50, 50, 50],
+            overflow: 'linebreak'
+        },
+        headStyles: {
+            fillColor: [79, 70, 229],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            halign: 'center',
+            valign: 'middle',
+            lineWidth: 0.1,
+            lineColor: [60, 50, 200],
+            minCellWidth: 20 // Attempt to force minimum width for headers
+        },
+        alternateRowStyles: {
+            fillColor: [249, 250, 251]
+        },
+        // Ensure full width use
+        margin: { top: 35, left: 10, right: 10 }
     });
 
     doc.save(`${filename}.pdf`);
@@ -166,19 +196,22 @@ export const generateInvoicePDF = async (orderItems: any[]) => {
         head: [['PRODUCT DESCRIPTION', 'QTY', 'UNIT PRICE', 'AMOUNT']],
         body: tableBody,
         startY: yPos,
-        theme: 'striped',
+        theme: 'grid',
         headStyles: {
             fillColor: primaryColor,
             textColor: [255, 255, 255],
             fontSize: 9,
             fontStyle: 'bold',
-            halign: 'left'
+            halign: 'left',
+            lineColor: [60, 50, 200],
+            lineWidth: 0.1
         },
         styles: {
             fontSize: 9,
             cellPadding: 5,
-            lineColor: [220, 220, 220],
-            lineWidth: 0.1
+            lineColor: [200, 200, 200], // Explicit border color
+            lineWidth: 0.1, // Explicit border width
+            textColor: [50, 50, 50]
         },
         columnStyles: {
             0: { cellWidth: 90 },

@@ -15,7 +15,7 @@ exports.getAllCategories = async (req, res) => {
             LEFT JOIN users u2 ON c.updated_by = u2.id
         `;
 
-        query += ' ORDER BY c.name ASC';
+        query += ' ORDER BY c.created_at DESC';
         const [categories] = await db.query(query);
         res.json(categories);
     } catch (error) {

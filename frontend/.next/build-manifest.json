@@ -30,50 +30,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/admin/reward-points": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/admin/reward-points.js"
-    ],
-    "/categories": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/categories.js"
-    ],
-    "/coupons": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/coupons.js"
-    ],
-    "/inventory": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/inventory.js"
-    ],
     "/orders": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/orders.js"
-    ],
-    "/products": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/products.js"
-    ],
-    "/sales": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/sales.js"
-    ],
-    "/settings/permissions": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/settings/permissions.js"
-    ],
-    "/users": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/users.js"
     ]
   },
   "ampFirstPages": []

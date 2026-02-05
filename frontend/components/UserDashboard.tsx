@@ -197,7 +197,12 @@ export default function UserDashboard({ user }: UserDashboardProps) {
             </div>
 
             {/* Reward Points Widget */}
-            <RewardPointsWidget className="mb-8" />
+            <RewardPointsWidget
+                className="mb-8"
+                period={period}
+                startDate={dateRange.start}
+                endDate={dateRange.end}
+            />
 
             {/* Highcharts Widget */}
             <div className="bg-surface border border-border rounded-xl p-6 shadow-sm mb-8">

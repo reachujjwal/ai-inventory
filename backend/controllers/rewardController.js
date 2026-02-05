@@ -4,16 +4,45 @@ const { logActivity } = require('../utils/activityLogger');
 exports.getRewardHistory = async (req, res) => {
     try {
         const userId = req.user.id;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+        const period = req.query.period || 'all_time';
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
 
-        const [logs] = await db.query(
-            `SELECT id, points, type, reference_id, created_at 
+        // Build WHERE clause with date filtering
+        let whereClause = 'WHERE user_id = ?';
+        let params = [userId];
+
+        if (period === 'today') {
+            whereClause += ' AND DATE(created_at) = CURDATE()';
+        } else if (period === 'custom' && startDate && endDate) {
+            whereClause += ' AND DATE(created_at) BETWEEN ? AND ?';
+            params.push(startDate, endDate);
+        }
+
+        // Count total
+        const countQuery = `SELECT COUNT(*) as total FROM reward_logs ${whereClause}`;
+        const [countResult] = await db.query(countQuery, params);
+        const total = countResult[0].total;
+
+        // Fetch data
+        const dataQuery = `SELECT id, points, type, reference_id, created_at 
              FROM reward_logs 
-             WHERE user_id = ? 
-             ORDER BY created_at DESC`,
-            [userId]
-        );
+             ${whereClause}
+             ORDER BY created_at DESC
+             LIMIT ? OFFSET ?`;
+        const [logs] = await db.query(dataQuery, [...params, limit, offset]);
 
-        res.json(logs);
+        res.json({
+            data: logs,
+            pagination: {
+                total,
+                page,
+                pages: Math.ceil(total / limit)
+            }
+        });
     } catch (error) {
         console.error('Error fetching reward history:', error);
         res.status(500).json({ message: 'Server Error' });
@@ -46,6 +75,10 @@ exports.getAllHistory = async (req, res) => {
                 JOIN reward_point_rules rpr ON o.reward_rule_id = rpr.id
             `;
             whereClauses.push('rpr.created_by = ?');
+            params.push(userId);
+        } else if (userRole === 'user') {
+            // Regular users only see their own history
+            whereClauses.push('rl.user_id = ?');
             params.push(userId);
         }
 
@@ -100,17 +133,42 @@ exports.getAllHistory = async (req, res) => {
 exports.getRewardBalance = async (req, res) => {
     try {
         const userId = req.user.id;
+        const period = req.query.period || 'all_time';
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
 
-        const [users] = await db.query(
-            'SELECT reward_points FROM users WHERE id = ?',
-            [userId]
-        );
+        let balance = 0;
 
-        if (users.length === 0) {
-            return res.status(404).json({ message: 'User not found' });
+        if (period === 'all_time') {
+            // Return total balance from users table
+            const [users] = await db.query(
+                'SELECT reward_points FROM users WHERE id = ?',
+                [userId]
+            );
+
+            if (users.length === 0) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+
+            balance = users[0].reward_points || 0;
+        } else {
+            // Calculate balance from reward_logs based on period
+            let whereClause = 'WHERE user_id = ?';
+            let params = [userId];
+
+            if (period === 'today') {
+                whereClause += ' AND DATE(created_at) = CURDATE()';
+            } else if (period === 'custom' && startDate && endDate) {
+                whereClause += ' AND DATE(created_at) BETWEEN ? AND ?';
+                params.push(startDate, endDate);
+            }
+
+            const query = `SELECT COALESCE(SUM(points), 0) as balance FROM reward_logs ${whereClause}`;
+            const [result] = await db.query(query, params);
+            balance = result[0].balance || 0;
         }
 
-        res.json({ balance: users[0].reward_points || 0 });
+        res.json({ balance });
     } catch (error) {
         console.error('Error fetching reward balance:', error);
         res.status(500).json({ message: 'Server Error' });

@@ -31,6 +31,8 @@ exports.getAllProducts = async (req, res) => {
         }
         // Users, admins, and other roles see all products
 
+        query += ' ORDER BY p.created_at DESC';
+
         const [products] = await db.query(query, params);
         res.json(products);
     } catch (error) {

@@ -22,6 +22,8 @@ export default function ActivityLogs() {
     const router = useRouter();
     const [activities, setActivities] = useState<ActivityLog[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [dateRange, setDateRange] = useState(() => {
         const end = new Date();
         const start = new Date();
@@ -37,17 +39,27 @@ export default function ActivityLogs() {
         if (user) {
             fetchActivities();
         }
-    }, [user]);
+    }, [user, page]);
 
     const fetchActivities = async () => {
         setIsLoading(true);
         try {
-            const params: any = {};
+            const params: any = {
+                page,
+                limit: 10
+            };
             if (dateRange.start) params.start_date = dateRange.start;
             if (dateRange.end) params.end_date = dateRange.end;
+            if (searchText) params.search = searchText;
 
             const res = await api.get('/activities', { params });
-            setActivities(res.data);
+            // Handle new paginated response
+            if (res.data.data) {
+                setActivities(res.data.data);
+                setTotalPages(res.data.pagination.pages);
+            } else {
+                setActivities(res.data); // Fallback
+            }
         } catch (err) {
             console.error('Failed to fetch activities', err);
         } finally {
@@ -55,11 +67,10 @@ export default function ActivityLogs() {
         }
     };
 
-    const filteredActivities = activities.filter(log =>
-        log.action.toLowerCase().includes(searchText.toLowerCase()) ||
-        (log.username || '').toLowerCase().includes(searchText.toLowerCase()) ||
-        (log.entity_type || '').toLowerCase().includes(searchText.toLowerCase())
-    );
+    const handleSearch = () => {
+        setPage(1);
+        fetchActivities();
+    };
 
     return (
         <Layout title="Activity Logs">
@@ -90,7 +101,7 @@ export default function ActivityLogs() {
                     />
                 </div>
                 <button
-                    onClick={fetchActivities}
+                    onClick={handleSearch}
                     className="w-full md:w-auto bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-lg font-bold transition-all shadow-lg shadow-primary/20"
                 >
                     Apply Filter
@@ -113,14 +124,14 @@ export default function ActivityLogs() {
                 <div className="flex justify-center py-20">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
-            ) : filteredActivities.length === 0 ? (
+            ) : activities.length === 0 ? (
                 <div className="text-center py-20 bg-surface border border-dashed border-border rounded-xl">
                     <div className="text-text-secondary mb-2">No activity logs found.</div>
                     <p className="text-xs text-text-secondary/70">Try adjusting your search or date filters.</p>
                 </div>
             ) : (
                 <div className="grid gap-4">
-                    {filteredActivities.map((log) => (
+                    {activities.map((log) => (
                         <div key={log.id} className="bg-surface border border-border rounded-xl p-5 hover:border-primary/40 transition-all shadow-sm group">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                                 <div className="flex items-center gap-3">
@@ -147,6 +158,31 @@ export default function ActivityLogs() {
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-between bg-surface border border-border rounded-xl p-4">
+                    <div className="text-xs text-text-secondary">
+                        Page <span className="font-bold text-text">{page}</span> of <span className="font-bold text-text">{totalPages}</span>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            className="px-3 py-1 text-xs font-bold bg-background border border-border rounded hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Previous
+                        </button>
+                        <button
+                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            disabled={page >= totalPages}
+                            className="px-3 py-1 text-xs font-bold bg-background border border-border rounded hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
             )}
         </Layout>

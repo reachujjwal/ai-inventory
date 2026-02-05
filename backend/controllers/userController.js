@@ -21,11 +21,12 @@ exports.getAllUsers = async (req, res) => {
             query += ' WHERE u.id = ?';
             params.push(userId);
         } else {
-            // Admin sees all, BUT filter out other admins as requested, except specific one
             // Requirement: "remove Admin role contanin data in User listing except admin@gmail.com"
             query += " WHERE (u.role != 'admin' OR u.email = ?)";
             params.push('admin@gmail.com');
         }
+
+        query += ' ORDER BY u.created_at DESC';
 
         const [users] = await db.query(query, params);
         res.json(users);
